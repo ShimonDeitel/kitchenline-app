@@ -1,0 +1,57 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="courtGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#14806F"/>
+      <stop offset="100%" stop-color="#083F36"/>
+    </linearGradient>
+    <radialGradient id="ballGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#E4EE6B" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#E4EE6B" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="ballShade" cx="38%" cy="34%" r="72%">
+      <stop offset="0%" stop-color="#E9F27C"/>
+      <stop offset="62%" stop-color="#D8E23A"/>
+      <stop offset="100%" stop-color="#B7C224"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1024" height="1024" fill="url(#courtGrad)"/>
+
+  <!-- kitchen zone tint -->
+  <rect x="0" y="340" width="1024" height="280" fill="#2E9683" opacity="0.35"/>
+
+  <!-- sidelines -->
+  <line x1="108" y1="120" x2="108" y2="944" stroke="#F4FBF8" stroke-width="30" stroke-linecap="square"/>
+  <line x1="916" y1="120" x2="916" y2="944" stroke="#F4FBF8" stroke-width="30" stroke-linecap="square"/>
+
+  <!-- baseline -->
+  <line x1="108" y1="944" x2="916" y2="944" stroke="#F4FBF8" stroke-width="30" stroke-linecap="square"/>
+
+  <!-- kitchen line -->
+  <line x1="108" y1="620" x2="916" y2="620" stroke="#F4FBF8" stroke-width="32" stroke-linecap="square"/>
+
+  <!-- net -->
+  <line x1="70" y1="340" x2="954" y2="340" stroke="#0B211D" stroke-width="38" stroke-dasharray="46 30" stroke-linecap="butt"/>
+
+  <!-- motion trail, feeding into the ball's current position -->
+  <circle cx="222" cy="332" r="24" fill="#D8E23A" opacity="0.14"/>
+  <circle cx="266" cy="368" r="32" fill="#D8E23A" opacity="0.22"/>
+  <circle cx="314" cy="408" r="42" fill="#D8E23A" opacity="0.32"/>
+
+  <!-- glow + ball -->
+  <circle cx="560" cy="572" r="330" fill="url(#ballGlow)"/>
+  <circle cx="560" cy="572" r="248" fill="url(#ballShade)"/>
+  <circle cx="560" cy="572" r="248" fill="none" stroke="#96A11D" stroke-width="6" opacity="0.5"/>
+
+  <!-- pickleball dimple holes -->
+  <g fill="#93A11C" opacity="0.6">
+    <circle cx="480" cy="412" r="15"/><circle cx="560" cy="412" r="15"/><circle cx="640" cy="412" r="15"/>
+    <circle cx="420" cy="492" r="15"/><circle cx="520" cy="492" r="15"/><circle cx="600" cy="492" r="15"/><circle cx="700" cy="492" r="15"/>
+    <circle cx="390" cy="572" r="15"/><circle cx="470" cy="572" r="15"/><circle cx="650" cy="572" r="15"/><circle cx="730" cy="572" r="15"/>
+    <circle cx="420" cy="652" r="15"/><circle cx="520" cy="652" r="15"/><circle cx="600" cy="652" r="15"/><circle cx="700" cy="652" r="15"/>
+    <circle cx="480" cy="732" r="15"/><circle cx="560" cy="732" r="15"/><circle cx="640" cy="732" r="15"/>
+  </g>
+
+  <!-- gloss highlight -->
+  <ellipse cx="480" cy="490" rx="72" ry="44" fill="#FFFFFF" opacity="0.2"/>
+</svg>
