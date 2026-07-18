@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kitchenline — Pickleball Drill Coach</title>
+<meta name="description" content="A solo pickleball drill trainer with an animated court diagram, a self-rated skill tracker, and an AI weekly practice plan. No matchmaking, no social feed — just better drills.">
+<style>
+  :root {
+    --paper: #F3F8F6; --panel: #FFFFFF; --panel-deep: #E6F1EC;
+    --ink: #122421; --ink-soft: rgba(18,36,33,0.66); --ink-faint: rgba(18,36,33,0.44);
+    --court: #0F6E63; --court-deep: #0B5348; --kitchen: #2E9683;
+    --citrus: #D8E23A; --citrus-deep: #B7C224;
+    --line: rgba(255,255,255,0.94); --net: #0B211D;
+    --card-shadow: 0 18px 40px rgba(15,110,99,0.14);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #081312; --panel: #0F201D; --panel-deep: #142925;
+      --ink: #EAF6F1; --ink-soft: rgba(234,246,241,0.68); --ink-faint: rgba(234,246,241,0.42);
+      --card-shadow: 0 18px 40px rgba(0,0,0,0.45);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased; line-height: 1.5; overflow-x: hidden;
+  }
+  a { color: inherit; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- Nav ---------- */
+  nav.top { position: sticky; top: 0; z-index: 20; backdrop-filter: blur(14px); background: color-mix(in srgb, var(--paper) 82%, transparent); border-bottom: 1px solid var(--panel-deep); }
+  nav.top .wrap { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 17px; text-decoration: none; color: var(--ink); }
+  .brand-mark { width: 26px; height: 26px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #EDF48B, var(--citrus) 60%, var(--citrus-deep)); box-shadow: 0 0 0 2px color-mix(in srgb, var(--court) 40%, transparent); }
+  nav.top .links { display: flex; gap: 22px; font-size: 14px; font-weight: 600; color: var(--ink-soft); }
+  nav.top .links a:hover { color: var(--court); }
+
+  /* ---------- Hero ---------- */
+  header.hero { padding: 64px 0 40px; }
+  .hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 48px; align-items: center; }
+  @media (max-width: 860px) { .hero-grid { grid-template-columns: 1fr; } }
+  .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--court); background: color-mix(in srgb, var(--court) 12%, transparent); padding: 6px 12px; border-radius: 999px; }
+  h1 { font-size: clamp(34px, 5vw, 52px); line-height: 1.05; letter-spacing: -0.02em; margin: 18px 0 16px; }
+  h1 .citrus { color: var(--citrus-deep); }
+  @media (prefers-color-scheme: dark) { h1 .citrus { color: var(--citrus); } }
+  .lede { font-size: 18px; color: var(--ink-soft); max-width: 46ch; margin: 0 0 28px; }
+  .cta-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 24px; border-radius: 999px; font-weight: 700; font-size: 15px; text-decoration: none; transition: transform 0.18s ease; }
+  .btn:hover { transform: translateY(-1px); }
+  .btn.primary { background: var(--court); color: #fff; }
+  .btn.ghost { background: var(--panel-deep); color: var(--ink); }
+  .fine { font-size: 13px; color: var(--ink-faint); margin-top: 14px; }
+
+  /* ---------- Court diagram ---------- */
+  .court-stage { display: flex; justify-content: center; }
+  .court { position: relative; width: 100%; max-width: 320px; aspect-ratio: 20 / 44; border-radius: 20px; overflow: hidden;
+    background: linear-gradient(180deg, var(--court) 0%, var(--court-deep) 100%);
+    box-shadow: var(--card-shadow); border: 3px solid var(--court-deep); }
+  .kitchen-band { position: absolute; left: 0; right: 0; top: 34.1%; height: 31.8%; background: var(--kitchen); opacity: 0.55; }
+  .court-line { position: absolute; background: var(--line); }
+  .sideline-l { left: 4%; top: 0; bottom: 0; width: 2.6%; }
+  .sideline-r { right: 4%; top: 0; bottom: 0; width: 2.6%; }
+  .baseline { left: 4%; right: 4%; bottom: 0; height: 2.6%; }
+  .kitchen-near { left: 4%; right: 4%; top: 34.1%; height: 2.6%; }
+  .kitchen-far { left: 4%; right: 4%; top: 65.9%; height: 2.6%; }
+  .center-near { left: 50%; top: 0; height: 34.1%; width: 1.6%; transform: translateX(-50%); opacity: 0.8; }
+  .center-far { left: 50%; top: 65.9%; bottom: 0; width: 1.6%; transform: translateX(-50%); opacity: 0.8; }
+  .net { left: 0; right: 0; top: 50%; height: 3.2%; transform: translateY(-50%); background: repeating-linear-gradient(90deg, var(--net) 0 10px, transparent 10px 18px); }
+
+  .locked-arc { position: absolute; left: 25%; top: 68.2%; width: 55.9%; height: 1px; transform-origin: 0 0; transform: rotate(-32deg); background: var(--citrus); box-shadow: 0 0 8px 1px var(--citrus); opacity: 0; animation: arcLock 3.2s ease-in-out infinite; }
+  @keyframes arcLock { 0%,44% { opacity: 0; } 50%,94% { opacity: 0.9; } 100% { opacity: 0; } }
+
+  .ball, .ball-trail { position: absolute; width: 5.6%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #F1F6A0, var(--citrus) 55%, var(--citrus-deep)); transform: translate(-50%, -50%); animation: ballMove 3.2s ease-in-out infinite; }
+  .ball { box-shadow: 0 0 16px 4px color-mix(in srgb, var(--citrus) 70%, transparent); z-index: 5; }
+  .ball-trail { opacity: 0.34; }
+  .ball-trail.t1 { animation-delay: 0.06s; opacity: 0.30; transform: translate(-50%,-50%) scale(0.86); }
+  .ball-trail.t2 { animation-delay: 0.12s; opacity: 0.22; transform: translate(-50%,-50%) scale(0.72); }
+  .ball-trail.t3 { animation-delay: 0.18s; opacity: 0.15; transform: translate(-50%,-50%) scale(0.58); }
+  .ball-trail.t4 { animation-delay: 0.24s; opacity: 0.09; transform: translate(-50%,-50%) scale(0.46); }
+  @keyframes ballMove {
+    0%   { left: 25%; top: 68.2%; }
+    45%  { left: 75%; top: 40.9%; }
+    52%  { left: 75%; top: 40.9%; }
+    97%  { left: 25%; top: 68.2%; }
+    100% { left: 25%; top: 68.2%; }
+  }
+  .ball-trail.t1, .ball-trail.t2, .ball-trail.t3, .ball-trail.t4 { animation-name: ballMoveTrail; }
+  @keyframes ballMoveTrail {
+    0%   { left: 25%; top: 68.2%; }
+    45%  { left: 75%; top: 40.9%; }
+    52%  { left: 75%; top: 40.9%; }
+    97%  { left: 25%; top: 68.2%; }
+    100% { left: 25%; top: 68.2%; }
+  }
+  .ghost { position: absolute; width: 6.2%; aspect-ratio: 1; border-radius: 50%; background: var(--net); border: 1.5px solid #fff; transform: translate(-50%,-50%); animation: ghostMove 3.2s ease-in-out infinite; opacity: 0.9; }
+  .ghost::after { content: "OPP"; position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-size: 6px; font-weight: 800; color: #fff; letter-spacing: 0.04em; }
+  @keyframes ghostMove {
+    0%   { left: 75%; top: 40.9%; }
+    45%  { left: 40%; top: 47%; }
+    52%  { left: 25%; top: 68.2%; }
+    97%  { left: 60%; top: 60%; }
+    100% { left: 75%; top: 40.9%; }
+  }
+
+  /* ---------- Sections ---------- */
+  section { padding: 56px 0; }
+  .section-head { max-width: 640px; margin: 0 0 34px; }
+  .section-head .eyebrow { margin-bottom: 14px; }
+  h2 { font-size: clamp(26px, 3.4vw, 34px); letter-spacing: -0.015em; margin: 0 0 10px; }
+  .section-head p { font-size: 16px; color: var(--ink-soft); margin: 0; }
+
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  @media (max-width: 900px) { .grid-4 { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 520px) { .grid-4 { grid-template-columns: 1fr; } }
+  .card { background: var(--panel); border: 1px solid var(--panel-deep); border-radius: 18px; padding: 22px; box-shadow: var(--card-shadow); }
+  .card .icon { width: 40px; height: 40px; border-radius: 12px; background: var(--panel-deep); display: flex; align-items: center; justify-content: center; margin-bottom: 14px; font-size: 18px; }
+  .card h3 { font-size: 16px; margin: 0 0 6px; }
+  .card p { font-size: 14px; color: var(--ink-soft); margin: 0; }
+
+  .hook-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  @media (max-width: 860px) { .hook-grid { grid-template-columns: 1fr; } }
+  .hook-card { background: var(--panel); border: 1px solid var(--panel-deep); border-radius: 18px; padding: 24px; }
+  .hook-num { font-weight: 800; font-size: 13px; color: var(--citrus-deep); }
+  @media (prefers-color-scheme: dark) { .hook-num { color: var(--citrus); } }
+  .hook-card h3 { font-size: 17px; margin: 8px 0 8px; }
+  .hook-card p { font-size: 14.5px; color: var(--ink-soft); margin: 0; }
+
+  .pro-band { background: linear-gradient(135deg, var(--court) 0%, var(--court-deep) 100%); border-radius: 26px; padding: 44px; color: #fff; }
+  .pro-band .eyebrow { background: rgba(255,255,255,0.16); color: #fff; }
+  .pro-band h2 { color: #fff; }
+  .pro-band p.lede2 { color: rgba(255,255,255,0.82); font-size: 16px; max-width: 56ch; }
+  .pro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 26px 0 30px; }
+  @media (max-width: 760px) { .pro-grid { grid-template-columns: 1fr; } }
+  .pro-item { background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.16); border-radius: 16px; padding: 20px; }
+  .pro-item h3 { margin: 0 0 8px; font-size: 16px; }
+  .pro-item p { margin: 0; font-size: 14px; color: rgba(255,255,255,0.78); }
+  .price-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 18px; }
+  .price-row .amount { font-size: 30px; font-weight: 800; }
+  .price-row .period { color: rgba(255,255,255,0.72); font-size: 14px; }
+
+  footer.site { padding: 40px 0 60px; border-top: 1px solid var(--panel-deep); margin-top: 20px; }
+  footer.site .wrap { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-size: 13px; color: var(--ink-faint); }
+  footer.site a { margin-right: 18px; color: var(--ink-soft); text-decoration: none; }
+  footer.site a:hover { color: var(--court); }
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <div class="wrap">
+    <a class="brand" href="#top"><span class="brand-mark"></span>Kitchenline</a>
+    <div class="links">
+      <a href="#drills">Drills</a>
+      <a href="#hook">Animation</a>
+      <a href="#pro">Pro</a>
+      <a href="privacy.html">Privacy</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow">Sports Training · iOS</span>
+      <h1>Drill the shots that actually <span class="citrus">move your rating.</span></h1>
+      <p class="lede">Kitchenline is a solo pickleball drill coach: a real, categorized drill library with an animated court diagram for every drill, a self-rated skill tracker, and — no matchmaking, no social feed, no leaderboard to scroll instead of practicing.</p>
+      <div class="cta-row">
+        <a class="btn primary" href="#drills">See the drill library</a>
+        <a class="btn ghost" href="#pro">What's in Pro</a>
+      </div>
+      <p class="fine">Free to start · Pro is $4.99/month, cancel anytime.</p>
+    </div>
+    <div class="court-stage">
+      <div class="court">
+        <div class="kitchen-band"></div>
+        <div class="court-line sideline-l"></div>
+        <div class="court-line sideline-r"></div>
+        <div class="court-line baseline"></div>
+        <div class="court-line kitchen-near"></div>
+        <div class="court-line kitchen-far"></div>
+        <div class="court-line center-near"></div>
+        <div class="court-line center-far"></div>
+        <div class="court-line net"></div>
+        <div class="locked-arc"></div>
+        <div class="ghost"></div>
+        <div class="ball-trail t4"></div>
+        <div class="ball-trail t3"></div>
+        <div class="ball-trail t2"></div>
+        <div class="ball-trail t1"></div>
+        <div class="ball"></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="drills">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Free, always</span>
+      <h2>18 real, named drills. Four categories.</h2>
+      <p>Every drill in the library is a real pickleball drill with actual coaching cues — not filler. Every one gets its own animated court diagram.</p>
+    </div>
+    <div class="grid-4">
+      <div class="card">
+        <div class="icon">◌</div>
+        <h3>Dinking</h3>
+        <p>Cross-court, straight-on, volley rallies, target zones, erne fakes, and the around-the-post trick shot.</p>
+      </div>
+      <div class="card">
+        <div class="icon">↘</div>
+        <h3>Third Shot Drop</h3>
+        <p>The transition shot into the kitchen — from baseline drops to resets under pressure.</p>
+      </div>
+      <div class="card">
+        <div class="icon">↗</div>
+        <h3>Serve &amp; Return</h3>
+        <p>Deep placement, body-bag serves, returning deep, and split-step timing off the return.</p>
+      </div>
+      <div class="card">
+        <div class="icon">➜</div>
+        <h3>Footwork</h3>
+        <p>Split-step ladders, side shuffles, crossover recovery, and transition-zone sprints.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="hook">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">The animation hook</span>
+      <h2>The court diagram isn't decoration. It's the drill.</h2>
+      <p>Every rep, the ball traces a glowing fading trail across the kitchen line — the exact shot pattern for that drill. Mark it "In" and the arc locks in bright, permanently, on your daily progress court.</p>
+    </div>
+    <div class="hook-grid">
+      <div class="hook-card">
+        <div class="hook-num">01</div>
+        <h3>Run the rep</h3>
+        <p>A small citrus ball animates the drill's real shot path — origin to target — with a glowing trail of fading copies behind it, live on a <code>Canvas</code>-drawn court.</p>
+      </div>
+      <div class="hook-card">
+        <div class="hook-num">02</div>
+        <h3>Mark it in</h3>
+        <p>Tap "In" and that exact arc locks into a bright, permanent citrus line — no more fading. "Out" just moves you to the next rep.</p>
+      </div>
+      <div class="hook-card">
+        <div class="hook-num">03</div>
+        <h3>Watch today build up</h3>
+        <p>Every locked arc, from every drill you practice today, accumulates on the Home tab's daily progress court — a visual record of the session, not just a number.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pro">
+  <div class="wrap">
+    <div class="pro-band">
+      <span class="eyebrow">Kitchenline Pro</span>
+      <h2>Let the AI build your week.</h2>
+      <p class="lede2">Rate your weak shots on the Skills tab, tell it how many minutes you've got today, and Pro turns that into an actual plan — plus a moving "ghost" opponent for the drill you're on.</p>
+      <div class="price-row"><span class="amount">$4.99</span><span class="period">/ month, auto-renewing</span></div>
+      <div class="pro-grid">
+        <div class="pro-item">
+          <h3>AI weekly practice plan</h3>
+          <p>Built from your self-rated weak shots and today's available minutes — real drills from the library, sequenced and reps assigned for you. Falls back to a solid default plan if the AI is briefly unreachable.</p>
+        </div>
+        <div class="pro-item">
+          <h3>Ghost-rally mode</h3>
+          <p>An AI-generated opponent — a labeled dot, not a video — moves to specific court positions tailored to the exact shot you're drilling, turning a static diagram into a live rally.</p>
+        </div>
+      </div>
+      <p class="fine" style="color:rgba(255,255,255,0.65)">Auto-renewable subscription billed to your Apple ID. Manage or cancel any time in Settings.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="wrap">
+    <div><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms of Use</a></div>
+    <div>© 2026 Kitchenline. Not affiliated with USA Pickleball.</div>
+  </div>
+</footer>
+
+</body>
+</html>
